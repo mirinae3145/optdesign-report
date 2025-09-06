@@ -1,0 +1,28 @@
+name: build-pdf
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup LaTeX environment and build PDF
+        uses: dante-ev/latex-action@latest
+        with:
+          root_file: main.tex
+          compiler: latexmk
+          args: -xelatex -interaction=nonstopmode -synctex=1 -file-line-error
+      - name: Release PDF
+        uses: softprops/action-gh-release@v1
+        with:
+          files: main.pdf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
