@@ -19,7 +19,7 @@ jobs:
         with:
           root_file: main.tex
           compiler: latexmk
-          args: -xelatex -interaction=nonstopmode -synctex=1 -file-line-error
+          args: -xelatex -interaction=nonstopmode -synctex=1 -file-line-error -shell-escape
       - name: Release PDF
         uses: softprops/action-gh-release@v1
         with:
