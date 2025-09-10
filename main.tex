@@ -44,14 +44,14 @@
             The results provide useful advice for economical EV design in light of global decarbonization and consumer markets that are price conscious.
         \end{abstract}
     \end{titlepage}
-    
+    %
     \begin{figure}[h]
         \centering
         \includegraphics[width=0.8\columnwidth]{growth.png}
         \caption{Growth in Global EV stock.}
         \label{growth}
     \end{figure}
-
+    %
     \section{Introduction}
         \subsection{Motivation}
             See \cref{growth}.
@@ -88,20 +88,20 @@
                     \caption{Declining EV Battery Prices.}
                     \label{batCost}
                 \end{figure}
-
+            %
             \subsubsection{The Value of Being Lightweight}
                 Reducing vehicle bulk directly increases efficiency.
                 A 10\% decrease in vehicle weight typically leads to a 6-8\% boost in fuel efficiency \cite{doe23b}.
                 Lighter cars use less energy per kilometer and can have smaller batteries while maintaining range.
                 Studies show that reducing weight can balance out battery mass, improving range or lowering costs as you can see in \cref{gliderReduction} \cite{doe23b}\cite{nrel23}.
-
+                %
                 \begin{figure}[h]
                     \centering
                     \includegraphics[width=.8\columnwidth]{gliderReduction.png}
                     \caption{Cost Based on Glider Weight Reduction.}
                     \label{gliderReduction}
                 \end{figure}
-            
+            %
             \subsubsection{Design Optimization \& Trade-offs}
                 A major design trade-off in EVs is balancing battery capacity and vehicle weight: smaller bodies increase efficiency, but they may demand more expensive materials or reduce range.
                 On the other hand, larger batteries offer greater range, but they increase cost and weight.
@@ -110,8 +110,7 @@
                 In the South Korean environment, our study emphasizes cost per range (KRW/km) and expands upon existing frameworks.
                 Using numerical and graphical optimization techniques, we take into account realistic restrictions.
                 This strategy meets the industry's currently increasing demand for EV cost-efficiency in real-world market conditions.
-
-
+    %
     \section{Methods}
         \subsection{Formalization}
             \label{form}
@@ -119,7 +118,7 @@
                 Unlike internal combustion engine vehicles, EVs are highly sensitive to changes in vehicle weight and battery size, which significantly affect energy efficiency and driving range. Increasing battery capacity extends the driving range but also raises vehicle weight and manufacturing cost, leading to trade-offs in operational efficiency. Heavier vehicles require more energy for propulsion, potentially increasing running costs.
                 \par
                 This study aims to minimize the total operating cost per range (KRW/km) in compact EVs. For each configuration, the feasible range and lifetime cost are estimated while satisfying realistic constraints. The objective is to identify the most cost-effective design that meets all requirements, offering practical guidance for future EV design.
-
+            %
             \subsubsection{Data \& Information Collection}
                 \begin{table*}
                     \vspace{-15mm}
@@ -142,7 +141,7 @@
                         \bottomrule
                     \end{tabular}
                 \end{table*}
-
+                %
                 The following important facts and figures were gathered in order to formalize the problem and objectively assess the driving cost of EVs:
                 \begin{itemize}
                     \item The air density and gravitational acceleration were taken from widely known values.
@@ -155,14 +154,14 @@
                     \item The cost of electricity was fixed at KRW 350 per kWh \cite{350won}.
                 \end{itemize}
                 In total, \cref{params} provides a summary of these parameters.
-
+            %
             \subsubsection{Variables}
                 We need to begin with defining the DVs.
                 The first is the battery capacity ($x_1$), and the second is the vehicle weight ($x_2$), which is the glider's mass without the battery pack.
                 Thus we can deal with a single vector like $\vec{x}=\left(\begin{smallmatrix}x_1\\x_2\end{smallmatrix}\right)$.
                 \par
                 Additionally, the analysis variables are defined as in \crefrange{eq1begin}{eq1end} which are derived from the aforementioned parameters and DVs.
-
+                %
                 \begin{align}
                     \label{eq1begin}
                     E(\vec{x})&=\frac{\frac{1}{2}\rho AC_d v^2 +(8x_1+x_2)gC_{rr}}{3600\eta}\\
@@ -172,7 +171,7 @@
                     C_{t}(\vec{x})&=C_{p}(\vec{x})+C_{e}(\vec{x})
                     \label{eq1end}
                 \end{align}
-
+                %
                 The energy consumption per km is denoted by $E$.
                 It is computed by adding up the energy used by rolling and air resistance, then dividing that total by the motor efficiency.
                 By dividing the battery capacity by the energy consumption per unit distance, one may get the driving range, or $R$.
@@ -183,7 +182,7 @@
                     \item An additional 6,000,000 KRW in fixed expenses\cite{600additionalexpenses}.
                     \item In a typical car sale, the margin was estimated to be about $2\times$ \cite{50percentmargine}.
                 \end{itemize}
-                
+                %
                 \begin{figure}[h]
                     \centering
                     \includegraphics[width=.8\columnwidth]{batVolPrice.png}
@@ -192,22 +191,21 @@
                 \end{figure}
                 The battery capacity, the cost of power, and the total number of charge-discharge cycles are multiplied to get the overall cost of battery charging.
                 The sum of the consumer pricing and the battery charging cost is the final definition of the overall cost.
-
+            %
             \subsubsection{Definition of Optimization Criterion}
                 The objective function is defined like \cref{fffff}, as the total cost divided by the total driving distance during the vehicle's lifespan, since the purpose is to minimize the cost per range of running a compact EV.
                 \begin{align}
                     \label{fffff}
                     f(\vec{x})=\frac{C_{t}(\vec{x})}{R(\vec{x})N}
                 \end{align}
-
+                %
                 \begin{figure}[h]
                     \centering
                     \includegraphics[width=.8\columnwidth]{avgCap.png}
                     \caption{Avg. Battery Capacity of EVs.}
                     \label{avgCap}
                 \end{figure}
-
-
+            %
             \subsubsection{Definition of Constraints}
                 \crefrange{eqbegin}{eqend} show the annotated constraints and their explicit expressions.
                 \begin{alignat}{3}
@@ -219,13 +217,13 @@
                     &g_6: x_2 &&\geq 1200 &&\\
                     &g_7: x_2 &&\leq 1800 && \label{eqend}
                 \end{alignat}
-
+                %
                 Firstly, $g_1$ was chosen since the minimum driving range of the majority of electric cars now available on the market is more than 400 km.
                 Then $g_2$ was based on the preference of individuals in their 20s and 30s for EVs that cost less than 40 million KRW \cite{segye24}.
                 Furthermore, $g_3$ was established since the existing structural technology cannot handle a battery pack that weighs more than 30\% of the vehicle as a whole.
                 Regarding side constraints, the majority of EVs have battery packs that have capacities between 40 and 80 kWh\cite{4080capacity}, which establishes the limits for $x_1$ (See \cref{avgCap}).
                 The boundaries for $x_2$ are defined by the fact that the average vehicle weight, excluding the battery pack, falls between 1200 and 1800 kg \cite{glider12}.
-            
+    %
     \subsection{\textsc{Matlab}}
             This section covers using \textsc{Matlab} to find a minimum solution and verify it graphically.
             \subsubsection{Numerical Solving}
@@ -305,7 +303,7 @@ function vars=analyzeVars(cap,wt,p)
 end
                     \end{lstlisting}
                 \end{enumerate}
-
+            %
             \subsubsection{Graphical Solutions Method}
                 \label{gsm}
                 The following is a sequential description of the code we wrote for the visualization and graphical solving.
@@ -375,7 +373,7 @@ xlim([LB(1) UB(1)]);
 ylim([LB(2) UB(2)]);
                     \end{lstlisting}
                 \end{enumerate}
-
+                %
                 \begin{figure}[h]
                     % \begin{minipage}[b]{0.25\textwidth}
                         \centering
@@ -385,7 +383,7 @@ ylim([LB(2) UB(2)]);
                     % \end{minipage}
                     % \hspace{5em}
                 \end{figure}
-
+                %
                 \begin{figure}[h]
                     % \begin{minipage}[b]{0.45\textwidth}
                         \centering
@@ -394,7 +392,7 @@ ylim([LB(2) UB(2)]);
                         \label{param2}
                     % \end{minipage}
                 \end{figure}
-                
+        %
         \subsection{Excel}
             \label{methodExcel}
             The following is the process of optimal design using Excel's solver.
@@ -404,7 +402,7 @@ ylim([LB(2) UB(2)]);
                 \item Turn on the Solver, set the objective function to minimize, enter all constraints including side constraints (a total of 7 in our design), and select the \texttt{GRG} nonlinear solving method. Since the inequality contains a nonlinear equation, this method is appropriate. To minimize errors, use the central difference method for numerical differentiation. Once completed all the settings, it will look like \cref{setting1,setting2}.
                 \item After obtaining the results, print the Solver report and sensitivity report to examine the solution and the derivation process.
             \end{enumerate}
-
+            %
             \begin{figure}[h]
                 \centering
                 % \begin{minipage}[b]{0.40\textwidth}
@@ -415,7 +413,7 @@ ylim([LB(2) UB(2)]);
                 % \end{minipage}
                 % \hspace{5em}
             \end{figure}
-
+            %
             \begin{figure}[h]
                 % \begin{minipage}[b]{0.40\textwidth}
                     \centering
@@ -424,8 +422,7 @@ ylim([LB(2) UB(2)]);
                     \label{setting2}
                 % \end{minipage}
             \end{figure}
-
-        
+    %        
     \section{Results}
         \subsection{\textsc{Matlab} \texttt{fmincon}}
             The solver converged as shown in \cref{disp}.
@@ -435,39 +432,39 @@ ylim([LB(2) UB(2)]);
             See \cref{disp2}, these are optimum solutions for DVs, objective function value at that point, and calculated analysis variables resulted from solver.
             Looking at the values, we can see that the minimum solution was found at $x_1=64.3$, and at this point, $x_2 = 1200$, which was the boundary of side constraint initially founded.
             In addition, the inequality condition $g_3$, ``the price must be less than 40MKRW,'' was triggered.
-
+            %
             \begin{figure}[h]
                 \centering
                 \includegraphics[width=.8\columnwidth]{matlabDisplay.png}
                 \caption{Printed Result of Solver.}
                 \label{disp}
             \end{figure}
-
+            %
             \begin{figure}[h]
                 \centering
                 \includegraphics[width=.8\columnwidth]{disp.png}
                 \caption{Optimum Solution and Values of Solver.}
                 \label{disp2}
             \end{figure}
-
+        %
         \subsection{Visualization}
             \label{vis}
                 \cref{graphical} illustrates the result figure of code discussed in \cref{gsm}.
                 First, the areas surrounded by black solid lines and restricted by RGB dashed lines are considered as the feasible region in yellow.
                 Next, examining the magenta contour lines, we observe that the function values decrease as you move toward the bottom-right, converging to the optimal point.
                 Eventually, the optimal solution can be found at the point where the last contour line is about to leave-the intervals were intentionally set so that the line passes through the point-the feasible area.
-
+                %
                 \begin{figure}[h]
                     \centering
                     \includegraphics[width=.9\columnwidth]{graphical.png}
                     \caption{Graphical Solutions.}
                     \label{graphical}
                 \end{figure}
-
+        %
         \subsection{Excel}
             Solver's results were derived as in \cref{res1,res2}.
             Similar to the optimal solution using \textsc{Matlab}, the battery capacity was about 64.28 kWh, the weight of the body excluding the battery was 1,200kg, and the objective function, that is, the vehicle cost per range, was about 92.08 won.
-
+            %
             \begin{figure}[h]
                 % \centering
                 % \begin{minipage}[b]{0.25\textwidth}
@@ -476,7 +473,7 @@ ylim([LB(2) UB(2)]);
                     \caption{Results of design variables.}
                     \label{res1}
             \end{figure}
-
+            %
             \begin{figure}[h]
                 % \end{minipage}
                 % \hspace{5em}
@@ -487,12 +484,11 @@ ylim([LB(2) UB(2)]);
                     \label{res2}
                 % \end{minipage}
             \end{figure}
-
             \par
             As mentioned in the \cref{methodExcel}, the sensitivity of the variable can be confirmed by obtaining the Lagrange multiplier value of each constraint through the sensitivity report.
             \cref{sense1} is a sensitivity report of the optimal design.
             As can be seen here, it can be seen that the absolute value of the Lagrange multiplier of the maximum charge ratio of the battery weight is about 7.9, which is significantly higher than that of other constraints.
-            
+            %
             \begin{figure}[h]
                 \centering
                 % \begin{minipage}[b]{0.40\textwidth}
@@ -503,7 +499,7 @@ ylim([LB(2) UB(2)]);
                 % \end{minipage}
                 % \hspace{5em}
             \end{figure}
-
+            %
             \begin{figure}[h]
                 % \begin{minipage}[b]{0.40\textwidth}
                     \centering
@@ -512,13 +508,12 @@ ylim([LB(2) UB(2)]);
                     \label{sense2}
                 % \end{minipage}
             \end{figure}
-
+            %
             Therefore, if the maximum charge ratio of the battery weight is relaxed, it can be expected that a more ideal value can be obtained.
             \cref{sense2} is the result derived by giving an offset of 1 percent above.
             In the objective function, a decrease of about 0.08 won and an increase of about 0.7 kWh in the battery capacity.
             Finally, an ideal value suitable for the purpose was obtained.
-
-
+    %
     \section{Discussion}
         \subsection{Insights from Graphical Solutions}
             In general, solvers such as \texttt{fmincon} cannot guarantee that the solution they find is the global minimum.
@@ -537,7 +532,7 @@ ylim([LB(2) UB(2)]);
             If, over the domain, the Hessian is not stationary and remains positive (semi-)definite, this indicates no other local minimum exists.
             Moreover, if the gradient of the Lagrangian is zero and the Lagrange multipliers are positive near the solution, this further confirms uniqueness.
             Unfortunately, we were not able to verify these conditions directly in \textsc{Matlab} code.
-
+        %
         \subsection{Excel}
             Excel's Solver offered a convenient way to handle our nonlinear optimization with multiple constraints.
             Its simple interface allowed us to test DVs and constraints quickly without writing code, making it effective for early-stage analysis.
@@ -547,7 +542,7 @@ ylim([LB(2) UB(2)]);
             \par
             Overall, Solver is best used for low-complexity problems or preliminary exploration.
             For more advanced optimization, pairing it with tools like \textsc{Matlab} can improve reliability and control.
-
+        %
         \subsection{The Optimal Solution Reaching the Boundary of the Side Constraint: Vehicle Weight Excluding the Battery}
             Based on various assumptions and simulation methods, we concluded that a battery capacity of approximately 64.28 kWh and a vehicle body weight excluding the battery of about 1200 kg was the most ideal combination.
             This value defines the relationship between cost, performance, and weight, and was considered the optimal setting under the given conditions.
@@ -567,13 +562,13 @@ ylim([LB(2) UB(2)]);
             \par
             If future research reflects these factors more precisely, a more realistic and reliable optimal design can be expected.
             Through this project, we experienced firsthand that optimal design is not just about numerical calculation, but a meaningful tool for solving real engineering problems.
-
+            %
             \begin{figure}[h]
                 \centering
                 \includegraphics[width=0.8\columnwidth]{bill.png}
                 \caption{Increasing Electricity Bill.}
                 \label{bill}
             \end{figure}
-            
+    %
     \printbibliography
 \end{document}
