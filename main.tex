@@ -11,8 +11,14 @@
 \usepackage{booktabs}
 \usepackage[capitalise]{cleveref}
 \usepackage[backend=biber,style=ieee,citestyle=ieee]{biblatex}
+\usepackage{ifplatform}
 
-\setmainhangulfont[AutoFakeSlant]{UnBatang}
+\ifwindows
+    \setmainhangulfont[AutoFakeSlant]{Batang}
+\fi
+\iflinux
+    \setmainhangulfont[AutoFakeSlant]{UnBatang}
+\fi
 
 \graphicspath{{./figures/}}
 
