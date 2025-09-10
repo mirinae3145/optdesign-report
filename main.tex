@@ -23,7 +23,7 @@
 \graphicspath{{./figures/}}
 
 \addbibresource{src.bib}
-\lstset{language=Matlab,numbers=left,breaklines=True,basicstyle=\footnotesize,upquote=true,showstringspaces=false,morekeywords={clearvars,struct,deal,optimoptions,fmincon,box,contourf,xlim,ylim}}
+\lstset{language=Matlab,numbers=left,breaklines=True,basicstyle=\footnotesize,upquote=true,showstringspaces=false,morekeywords={clearvars,struct,deal,optimoptions,fmincon,box,contourf,xlim,ylim},gobble=24}
 \geometry{a4paper,left=20mm,right=20mm,top=30mm,bottom=30mm}
 % \setlength{\droptitle}{10mm}
 \renewcommand*{\mkbibemph}[1]{\textsl{#1}}
@@ -237,76 +237,76 @@
                 \begin{enumerate}
                     \item First, we initialize the variables, declare the DVs and their side constraints, and define each constant.
                     \begin{lstlisting}
-%% init
-clearvars;
-close all;
-clc;
+                        %% init
+                        clearvars;
+                        close all;
+                        clc;
 
-%% dv & bc
-% battery capacity; glider weight
-DV0=[60;1500]; % initial guess
-lb=[40;1200];
-ub=[80;1800];
+                        %% dv & bc
+                        % battery capacity; glider weight
+                        DV0=[60;1500]; % initial guess
+                        lb=[40;1200];
+                        ub=[80;1800];
 
-%% params
-p=struct();
-p.rho=1.2; % density of air
-p.g=9.81; % gravity
-p.Cd=.35; % drag coefficient
-p.Crr=.015; % rolling resistance
-p.eta=.9; % efficiency
-p.N=1000; % battery charge cycle
-p.A=2.2; % frontal pojection area
-p.v=12.22; % avg. velocity
-p.CE=350; % electricity charge
+                        %% params
+                        p=struct();
+                        p.rho=1.2; % density of air
+                        p.g=9.81; % gravity
+                        p.Cd=.35; % drag coefficient
+                        p.Crr=.015; % rolling resistance
+                        p.eta=.9; % efficiency
+                        p.N=1000; % battery charge cycle
+                        p.A=2.2; % frontal pojection area
+                        p.v=12.22; % avg. velocity
+                        p.CE=350; % electricity charge
                     \end{lstlisting}
                     \item Declare anonymous handles.Since the functions we use by default take in both DVs and parameters, we need to wrap them so that they can be optimized with one variable in \texttt{fmincon} (Find minimum of constrained nonlinear multivariable function).
                     \begin{lstlisting}[firstnumber=last]
-%% anonymous handles
-objFHandle=@(DV)objF(DV(1),DV(2),p);
-nonlinConHandle=@(DV)deal(nonlinCon(DV(1),DV(2),p),[]);
+                        %% anonymous handles
+                        objFHandle=@(DV)objF(DV(1),DV(2),p);
+                        nonlinConHandle=@(DV)deal(nonlinCon(DV(1),DV(2),p),[]);
                     \end{lstlisting}
                     \item Perform the actual optimization. Here, the algorithm used is \texttt{sqp} (Sequential Quadratic Programming), which has the advantage of convergence stability at small scales. Then print the results to the terminal.
                     \begin{lstlisting}[firstnumber=last]
-%% run optimization
-opts=optimoptions('fmincon','Algorithm','active-set','Display','none');
-[DV_opt,f_opt]=fmincon(objFHandle,DV0,[],[],[],[],lb,ub,nonlinConHandle,opts);
+                        %% run optimization
+                        opts=optimoptions('fmincon','Algorithm','active-set','Display','none');
+                        [DV_opt,f_opt]=fmincon(objFHandle,DV0,[],[],[],[],lb,ub,nonlinConHandle,opts);
 
-%% print results
-fprintf('Design Variables:\nx1=%.3f\tx2=%.f\n\n',DV_opt);
-fprintf('Objective Function Value:\nf=%.3f\n\n',f_opt);
-fprintf('Analysis Variables:\n');
-disp(analyzeVars(DV_opt(1),DV_opt(2),p));
+                        %% print results
+                        fprintf('Design Variables:\nx1=%.3f\tx2=%.f\n\n',DV_opt);
+                        fprintf('Objective Function Value:\nf=%.3f\n\n',f_opt);
+                        fprintf('Analysis Variables:\n');
+                        disp(analyzeVars(DV_opt(1),DV_opt(2),p));
                     \end{lstlisting}
                     \item Define an objective function and nonlinear constraints. The terms in constraints should be transposed so that the expressions are equal to or less than zero. These expressions are returned as a single vector, stacked.
                     \begin{lstlisting}[firstnumber=last]
-%% def objective function
-function f=objF(cap,wt,p)
-    vars=analyzeVars(cap,wt,p);
-    f=vars.Ctot./(vars.R*p.N); % cost per range
-end
+                        %% def objective function
+                        function f=objF(cap,wt,p)
+                            vars=analyzeVars(cap,wt,p);
+                            f=vars.Ctot./(vars.R*p.N); % cost per range
+                        end
 
-%% def nonlinear constraints
-function c=nonlinCon(cap,wt,p)
-    vars=analyzeVars(cap,wt,p);
-    c=[
-        vars.Cprod-40000000; % max cost
-        400-vars.R; % min range
-        cap-(3/56)*wt % max fraction of battery
-        ];
-end
+                        %% def nonlinear constraints
+                        function c=nonlinCon(cap,wt,p)
+                            vars=analyzeVars(cap,wt,p);
+                            c=[
+                                vars.Cprod-40000000; % max cost
+                                400-vars.R; % min range
+                                cap-(3/56)*wt % max fraction of battery
+                                ];
+                        end
                     \end{lstlisting}
                     \item Compute the analysis variables. To keep the processing fast in the \texttt{fmincon} and to allow the grids to be input for later visualization, it is processed using element-wise matrix operations.
                     \begin{lstlisting}[firstnumber=last]
-%% def analysis variables
-function vars=analyzeVars(cap,wt,p)
-    vars=struct();
-    vars.E=1/(p.eta*3600).*(p.rho*p.A*p.Cd*p.v^2/2+(8.*cap+wt)*p.g*p.Crr); % energy per distance
-    vars.R=cap./vars.E; % range
-    vars.Cprod=280000.*cap+6000.*wt+12000000; % production cost
-    vars.Cenergy=cap*p.CE*p.N; % energy cost
-    vars.Ctot=vars.Cprod+vars.Cenergy; % total cost
-end
+                        %% def analysis variables
+                        function vars=analyzeVars(cap,wt,p)
+                            vars=struct();
+                            vars.E=1/(p.eta*3600).*(p.rho*p.A*p.Cd*p.v^2/2+(8.*cap+wt)*p.g*p.Crr); % energy per distance
+                            vars.R=cap./vars.E; % range
+                            vars.Cprod=280000.*cap+6000.*wt+12000000; % production cost
+                            vars.Cenergy=cap*p.CE*p.N; % energy cost
+                            vars.Ctot=vars.Cprod+vars.Cenergy; % total cost
+                        end
                     \end{lstlisting}
                 \end{enumerate}
             %
@@ -316,67 +316,67 @@ end
                 \begin{enumerate}
                     \item First, we create a mesh grid on the plane and calculate the function value and constraint satisfaction for each point. The calculated range is then divided into equally spaced points on a logarithmic scale, and the satisfactions are all multiplied to form a logical matrix.
                     \begin{lstlisting}
-%% construct grids
-% visualization area
-LB=[30,1050];
-UB=[90,1950];
+                        %% construct grids
+                        % visualization area
+                        LB=[30,1050];
+                        UB=[90,1950];
 
-n=1000;
-x1=linspace(LB(1),UB(1),n);
-x2=linspace(LB(2),UB(2),n);
-[X1,X2]=meshgrid(x1,x2);
+                        n=1000;
+                        x1=linspace(LB(1),UB(1),n);
+                        x2=linspace(LB(2),UB(2),n);
+                        [X1,X2]=meshgrid(x1,x2);
 
-%% compute functions for plot
-f=objF(X1,X2,p);
-levels=linspace(log(min(f(:)-50)),log(max(f(:))-50),7);
-levels=exp(levels)+50;
-levels(2)=f_opt;
+                        %% compute functions for plot
+                        f=objF(X1,X2,p);
+                        levels=linspace(log(min(f(:)-50)),log(max(f(:))-50),7);
+                        levels=exp(levels)+50;
+                        levels(2)=f_opt;
 
-c=nonlinCon(X1,X2,p);
-% returned as stack of grids
-c1=c(1:n,:);
-c2=c(n+1:2*n,:);
-c3=c(2*n+1:3*n,:);
-feasibility=(c1<=0)&(c2<=0)&(c3<=0)&(X1<=ub(1))&(X1>=lb(1))&(X2>=lb(2))&(X2<=ub(2)); % in constraints & boundary
+                        c=nonlinCon(X1,X2,p);
+                        % returned as stack of grids
+                        c1=c(1:n,:);
+                        c2=c(n+1:2*n,:);
+                        c3=c(2*n+1:3*n,:);
+                        feasibility=(c1<=0)&(c2<=0)&(c3<=0)&(X1<=ub(1))&(X1>=lb(1))&(X2>=lb(2))&(X2<=ub(2)); % in constraints & boundary
                     \end{lstlisting}
                     \item Prepare a figure, and paint feasible region from the logical matrix. Then draw lines for the constraints in the desired form. Also, draw isocurves using the function intervals recorded and mark the minimum solution at the contact point.
                     \begin{lstlisting}[firstnumber=last]
-%% ready figure
-figure;
-hold on;
-box on;
+                        %% ready figure
+                        figure;
+                        hold on;
+                        box on;
 
-%% draw feasible region
-contourf(X1,X2,feasibility,[0.5 1],'LineColor','none','FaceColor','yellow');
+                        %% draw feasible region
+                        contourf(X1,X2,feasibility,[0.5 1],'LineColor','none','FaceColor','yellow');
 
-%% draw others
-% constraints
-contour(X1,X2,c1,[0 0],'r--');
-text(70,1100,'C_{p}=40M','Color','r','FontWeight','bold');
-contour(X1,X2,c2,[0 0],'b--');
-text(48,1850,'R=400','Color','b','FontWeight','bold');
-contour(X1,X2,c3,[0 0],'g--');
-text(78,1600,'56x_1=3x_2','Color','g','FontWeight','bold');
+                        %% draw others
+                        % constraints
+                        contour(X1,X2,c1,[0 0],'r--');
+                        text(70,1100,'C_{p}=40M','Color','r','FontWeight','bold');
+                        contour(X1,X2,c2,[0 0],'b--');
+                        text(48,1850,'R=400','Color','b','FontWeight','bold');
+                        contour(X1,X2,c3,[0 0],'g--');
+                        text(78,1600,'56x_1=3x_2','Color','g','FontWeight','bold');
 
-[CF,hF]=contour(X1,X2,f,levels,'LineColor','magenta','LabelFormat','f=%.1f'); % contours
-plot([LB(1) UB(1)],[lb(2) lb(2)],'k-'); % boundary
-plot([ub(1) ub(1)],[LB(2) UB(2)],'k-');
-plot([LB(1) UB(1)],[ub(2) ub(2)],'k-');
-plot([lb(1) lb(1)],[LB(2) UB(2)],'k-');
-text(50,1175,'x_2=1200','Color','k');
-text(80,1500,'x_1=80','Color','k');
-text(62,1825,'x_2=1800','Color','k');
-text(40,1500,'x_1=40','Color','k');
-xlabel('x_1');
-ylabel('x_2');
-plot(DV_opt(1),DV_opt(2),'o','MarkerSize',10,'MarkerFaceColor','cyan','MarkerEdgeColor','k','LineWidth',2); % solution
+                        [CF,hF]=contour(X1,X2,f,levels,'LineColor','magenta','LabelFormat','f=%.1f'); % contours
+                        plot([LB(1) UB(1)],[lb(2) lb(2)],'k-'); % boundary
+                        plot([ub(1) ub(1)],[LB(2) UB(2)],'k-');
+                        plot([LB(1) UB(1)],[ub(2) ub(2)],'k-');
+                        plot([lb(1) lb(1)],[LB(2) UB(2)],'k-');
+                        text(50,1175,'x_2=1200','Color','k');
+                        text(80,1500,'x_1=80','Color','k');
+                        text(62,1825,'x_2=1800','Color','k');
+                        text(40,1500,'x_1=40','Color','k');
+                        xlabel('x_1');
+                        ylabel('x_2');
+                        plot(DV_opt(1),DV_opt(2),'o','MarkerSize',10,'MarkerFaceColor','cyan','MarkerEdgeColor','k','LineWidth',2); % solution
 
-clabel(CF, hF, 'FontSize',9, 'Color','m', 'LabelSpacing',400);
+                        clabel(CF, hF, 'FontSize',9, 'Color','m', 'LabelSpacing',400);
 
-%% wrap figure up
-axis tight;
-xlim([LB(1) UB(1)]);
-ylim([LB(2) UB(2)]);
+                        %% wrap figure up
+                        axis tight;
+                        xlim([LB(1) UB(1)]);
+                        ylim([LB(2) UB(2)]);
                     \end{lstlisting}
                 \end{enumerate}
                 %
